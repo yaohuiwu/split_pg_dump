@@ -35,7 +35,7 @@ Default s with no options
 00006_ix_some_index.sql
 </pre>
 
--ns , -nosequene
+-ns , -nosequence
 <pre>
 ty_some_type.sql
 fn_some_function.sql
