@@ -55,4 +55,5 @@ ix_some_index.sql
 00006_some_index.sql
 </pre
 <p>
+<p>
 <a href="https://github.com/ajgreyling/split_pg_dump/blob/master/bulkpsql.sh">bulkpsql.sh</a> will allow you to apply the whole folder of files to the server by only specifying your password and schema once.
