@@ -35,7 +35,6 @@ type_prefix = {
     'SCHEMA' : 'sc_'
 }
 
-
 inputfile = ''
 inputfile=args.sourcefile
 
@@ -51,7 +50,6 @@ if not args.noclean:
         if filename.endswith(".sql"):
             os.remove(os.path.join(output_dir,filename))
 
-
 with open(inputfile) as fo:
         skip = True
         newfile = True
@@ -64,7 +62,6 @@ with open(inputfile) as fo:
                 newfile = True
                 object_name = match_result.group('object_name')
                 object_type = match_result.group('object_type')
-#                skip = object_type == 'SCHEMA' or object_type == 'TABLE' or should_be_skipped(object_name)
                 skip = should_be_skipped(object_name,object_type)
                 if not skip :
                     object_type_set.add(object_type)
