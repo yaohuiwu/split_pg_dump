@@ -23,7 +23,7 @@ The python script <a href="https://github.com/ajgreyling/split_pg_dump/blob/mast
 
 To make the resulting files portable (to allow you applying the changes to another database or schema) perform pg_dump with the following parameters: -s -x -O
 
-<b>Output Filenames<b>
+<b>Output Filenames</b>
 
 Default s with no options
 <pre>
