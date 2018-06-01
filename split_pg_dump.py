@@ -3,7 +3,7 @@ import re
 import os
 import argparse
 
-parser = argparse.ArgumentParser(description='Split output from pg_dump into seperate files. See https://github.com/kruckenb/split_postgres_dump/blob/master/split-pg-dump.pl')
+parser = argparse.ArgumentParser(description='Split output from pg_dump into seperate files. See https://github.com/ajgreyling/split_pg_dump')
 parser.add_argument('sourcefile', help='SQL input file. Typically from pg_dump')
 args = parser.parse_args()
 
