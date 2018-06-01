@@ -14,6 +14,9 @@ type_prefix = {
 
 print "input file:", sys.argv[1]
 inputfile=sys.argv[1]
+# delete contents of 00000_pre_execute.sql. If it does not exist, create it
+open('00000_pre_execute.sql', 'w').close()
+
 with open(inputfile) as fo:
         skip = True
         newfile = True
@@ -28,7 +31,7 @@ with open(inputfile) as fo:
                 object_type = match_result.group('object_type')
                 if object_name == 'FUNCTION':
                     print object_name
-                skip = (object_type == 'SCHEMA' or object_type == 'TABLE' or '__idx_he_' in object_name or '__he_' in object_name)
+                skip = (object_type == 'SCHEMA' or object_type == 'TABLE' or '__idx_he_' in object_name or '__he_' in object_name or object_name in '__change_')
                 if not skip :
                     object_type_set.add(object_type)
 
@@ -52,3 +55,9 @@ with open(inputfile) as fo:
                         opf.write(line)       
                         opf.close
 fo.close()
+
+#def write_pre_excute(object_name)
+#    with open ('00000_pre_execute.sql','a') as opf:
+#        opf.write('\nDO $$ BEGIN\n')
+#        opf.write('PERFORM __he_delete_table_or_view__(\'' + object_name + '\');\n')
+#        opf.write('END $$;\n\n')   
