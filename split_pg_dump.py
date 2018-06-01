@@ -1,6 +1,11 @@
 import sys
 import re
 import os
+import argparse
+
+parser = argparse.ArgumentParser(description='Split output from pg_dump into seperate files. See https://github.com/kruckenb/split_postgres_dump/blob/master/split-pg-dump.pl')
+parser.add_argument('sourcefile', help='SQL input file. Typically from pg_dump')
+args = parser.parse_args()
 
 type_prefix = {
     'MATERIALIZED VIEW' : '_mv_',
@@ -12,10 +17,11 @@ type_prefix = {
     'FUNCTION' : '_fn_'
 }
 
-print "input file:", sys.argv[1]
-inputfile=sys.argv[1]
+print "input file:", args.sourcefile
+inputfile = ''
+inputfile=args.sourcefile
 # delete contents of 00000_pre_execute.sql. If it does not exist, create it
-open('00000_pre_execute.sql', 'w').close()
+#open('00000_pre_execute.sql', 'w').close()
 
 with open(inputfile) as fo:
         skip = True
@@ -39,7 +45,7 @@ with open(inputfile) as fo:
                         filename = '{0:05d}'.format(cntr) + type_prefix[object_type] + object_name + '.sql'
                         print filename
                         with open (filename,'w') as opf:
-                            if object_type == 'VIEW':
+                            if object_type == 'VIEW' or object_type == 'MATERIALIZED VIEW':
                                 opf.write('\nDO $$ BEGIN\n')
                                 opf.write('PERFORM __he_delete_table_or_view__(\'' + object_name + '\');\n')
                                 opf.write('END $$;\n\n')    
