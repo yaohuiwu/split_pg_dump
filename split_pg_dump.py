@@ -62,7 +62,7 @@ with open(inputfile) as fo:
         object_type_set = set()
         for line in fo.readlines():
 #           use https://pythex.org/ to test the regular expression            
-            match_result = re.search('-- Name: (?P<object_name>\w+)\(?\)?.*?Type: (?P<object_type>\w+ ?\w+);', line)
+            match_result = re.search(r'-- Name: (?P<object_name>\w+)\(?\)?.*?Type: (?P<object_type>\w+ ?\w+);', line)
             if not (match_result is None):
                 newfile = True
                 object_name = match_result.group('object_name')
@@ -86,6 +86,8 @@ with open(inputfile) as fo:
                                 opf.write('\nDO $$ BEGIN\n')
                                 opf.write('PERFORM __he_delete_table_or_view__(\'' + object_name + '\');\n')
                                 opf.write('END $$;\n\n')    
+                            # remove schema from comment line with name and type of object
+                            line = re.sub(r'Schema: \w+;','',line)
                             opf.write(line)
                             opf.close
                             cntr+=1
@@ -95,7 +97,11 @@ with open(inputfile) as fo:
             else:
                 if skip == False:
                     with open (filename,'a') as opf:
-                        opf.write(line)       
+                        create_function_match = re.search(r'CREATE FUNCTION (?P<function_name>\w+)()', line)
+                        if not (create_function_match is None):
+                            opf.write('CREATE OR REPLACE FUNCTION ' + create_function_match.group('function_name'))    
+                        else:
+                            opf.write(line)       
                         opf.close
 fo.close()
 
