@@ -32,7 +32,11 @@ type_prefix = {
     'TYPE' : 'ty_',
     'VIEW' : 'vw_',
     'FUNCTION' : 'fn_',
-    'SCHEMA' : 'sc_'
+    'SCHEMA' : 'sc_',
+    'RULE' : 'rl_',
+    'CONSTRAINT' : 'cs_',
+    'TRIGGER' : 'tr_',
+    'FK CONSTRAINT' : 'fk_'
 }
 
 inputfile = ''
@@ -57,7 +61,8 @@ with open(inputfile) as fo:
         filename = ''
         object_type_set = set()
         for line in fo.readlines():
-            match_result = re.search('-- Name: (?P<object_name>\w+)\(?\)?; Type: (?P<object_type>\w+ ?\w+);', line)
+#           use https://pythex.org/ to test the regular expression            
+            match_result = re.search('-- Name: (?P<object_name>\w+)\(?\)?.*?Type: (?P<object_type>\w+ ?\w+);', line)
             if not (match_result is None):
                 newfile = True
                 object_name = match_result.group('object_name')
