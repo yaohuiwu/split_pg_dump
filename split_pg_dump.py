@@ -10,7 +10,7 @@ parser.add_argument('-ns','-nosequence', dest='nosequence',action='store_true',h
 parser.add_argument('-nt','-notype', dest='notype',action='store_true',help='Ommit the type prefix in resulting filenames' )
 parser.add_argument('-nc','-noclean', dest='noclean',action='store_true',help='Skip the step of cleaning the target directory of *.sql' )
 parser.add_argument('-xn','-exludenames', dest='excludenames',nargs='+', help='Exclude objects these strings in their names')
-parser.add_argument('-xt','-exludetypes', dest='exludetypes',nargs='+', help='Exclude objects these types')
+parser.add_argument('-xt','-exludetypes', dest='exludetypes',nargs='+', help='Exclude objects these types. Options are MATERIALIZED VIEW,SEQUENCE,INDEX,TABLE,TYPE,VIEW,FUNCTION,SCHEMA,CONSTRAINT,TRIGGER,FK CONSTRAINT')
 args = parser.parse_args()
 
 def should_be_skipped(object_name,object_type):

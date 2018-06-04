@@ -2,19 +2,29 @@
 Split / parse pg_dump output to individual files per object
 <p>
 <pre>
-usage: split_pg_dump.py [-h] [-ns] [-nt] sourcefile
-
-Split output from pg_dump into seperate files. See
-https://github.com/ajgreyling/split_pg_dump
 
 positional arguments:
-  sourcefile        SQL input file. Typically from pg_dump
+  sourcefile            SQL input file. Typically from pg_dump
 
 optional arguments:
-  -h, --help        show this help message and exit
-  -ns, -nosequence  Omit the sequence number prefix for resulting filenames.
-                    Handy for comparing schemas between databases
-  -nt, -notype      Ommit the type prefix in resulting filenames
+  -h, --help            show this help message and exit
+  -of OUTPUTDIR, -outputdir OUTPUTDIR
+                        Optional alternative destination / output directory
+                        for SQL output files
+  -ns, -nosequence      Omit the sequence number prefix for resulting
+                        filenames. Handy for comparing schemas between
+                        databases
+  -nt, -notype          Ommit the type prefix in resulting filenames
+  -nc, -noclean         Skip the step of cleaning the target directory of
+                        *.sql
+  -xn EXCLUDENAMES [EXCLUDENAMES ...], -exludenames EXCLUDENAMES [EXCLUDENAMES ...]
+                        Exclude objects these strings in their names
+  -xt EXLUDETYPES [EXLUDETYPES ...], -exludetypes EXLUDETYPES [EXLUDETYPES ...]
+                        Exclude objects these types. Options are MATERIALIZED
+                        VIEW,SEQUENCE,INDEX,TABLE,TYPE,VIEW,FUNCTION,SCHEMA,CO
+                        NSTRAINT,TRIGGER,FK CONSTRAINT
+
+Samples: To exclude schema and foreign key constraints: -xt 'SCHEMA' 'FK CONTSTAINT'
 </pre>
 <p>
 Tested on PostrgeSQL 9.6 and Ubuntu 14.04.2 LTS
