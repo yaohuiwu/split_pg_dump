@@ -13,6 +13,8 @@ parser.add_argument('-xn','-exludenames', dest='excludenames',nargs='+', help='E
 parser.add_argument('-xt','-exludetypes', dest='exludetypes',nargs='+', help='Exclude objects these types. Options are MATERIALIZED VIEW,SEQUENCE,INDEX,TABLE,TYPE,VIEW,FUNCTION,SCHEMA,CONSTRAINT,TRIGGER,FK CONSTRAINT')
 args = parser.parse_args()
 
+rule_tables_set = set()
+
 def should_be_skipped(object_name,object_type):
     for exclude_name in args.excludenames:
         if exclude_name in object_name:
@@ -20,6 +22,9 @@ def should_be_skipped(object_name,object_type):
             return True
     for exclude_type in args.exludetypes:
         if exclude_type == object_type:
+            if exclude_type == 'TABLE' and object_name in rule_tables_set:
+                #this is a special case. This table is for a view which pg_dump exported as a table and a rule so don't skip it
+                return False
             print "skipping due to type: " + object_type + " name: " + object_name
             return True
     return False
@@ -53,6 +58,18 @@ if not args.noclean:
     for filename in files:
         if filename.endswith(".sql"):
             os.remove(os.path.join(output_dir,filename))
+
+text_file = open(inputfile, 'r')
+all_lines = text_file.read()
+text_file.close()
+rule_matches = re.findall(r'CREATE RULE "_RETURN" AS\s*ON SELECT TO (?P<table_name>\w+)\s*DO INSTEAD',all_lines,re.MULTILINE)
+if not (rule_matches is None):
+#    rule_tables_set.add(rule_matches.group('table_name'))
+    for rule_table in rule_matches:
+        rule_tables_set.add(rule_table)
+        print rule_table
+
+#quit()
 
 with open(inputfile) as fo:
         skip = True
@@ -103,6 +120,8 @@ with open(inputfile) as fo:
                         opf.write(line)       
                         opf.close
 fo.close()
+
+
 
 
     
