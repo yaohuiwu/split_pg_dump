@@ -97,11 +97,10 @@ with open(inputfile) as fo:
             else:
                 if skip == False:
                     with open (filename,'a') as opf:
-                        create_function_match = re.search(r'CREATE FUNCTION (?P<function_name>\w+)\(\)(?P<last_part>.*$)', line)
-                        if not (create_function_match is None):
-                            opf.write('CREATE OR REPLACE FUNCTION ' + create_function_match.group('function_name') + '()' + create_function_match.group('last_part') + '\n')                        
-                        else:
-                            opf.write(line)       
+                        create_function_const = 'CREATE FUNCTION '
+                        if create_function_const in line:
+                            line = line.replace(create_function_const,'CREATE OR REPLACE FUNCTION ')
+                        opf.write(line)       
                         opf.close
 fo.close()
 
