@@ -48,7 +48,8 @@ type_prefix = {
     'RULE' : 'rl_',
     'CONSTRAINT' : 'cs_',
     'TRIGGER' : 'tr_',
-    'FK CONSTRAINT' : 'fk_'
+    'FK CONSTRAINT' : 'fk_',
+    'COMMENT': 'ct_'
 }
 
 inputfile = ''
