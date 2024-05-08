@@ -5,6 +5,8 @@ import argparse
 
 parser = argparse.ArgumentParser(description='Split output from pg_dump into seperate files. See https://github.com/ajgreyling/split_pg_dump')
 parser.add_argument('sourcefile',help='SQL input file. Typically from pg_dump')
+parser.add_argument('-dc','-deletecomments', dest='deletecomments', action='store_true',help='Optional delete all comment')
+parser.add_argument('-de','-deleteempty', dest='deleteempty', action='store_true',help='Optional delete all empty lines')
 parser.add_argument('-of','-outputdir',dest='outputdir',help='Optional alternative destination / output directory for SQL output files')
 parser.add_argument('-ns','-nosequence', dest='nosequence',action='store_true',help='Omit the sequence number prefix for resulting filenames. Handy for comparing schemas between databases')
 parser.add_argument('-nt','-notype', dest='notype',action='store_true',help='Ommit the type prefix in resulting filenames' )
@@ -35,6 +37,11 @@ def should_be_skipped(object_name,object_type):
                     print ("skipping due to type: " + object_type + " name: " + object_name)
                     return True
         return False
+
+def write_line(fp, line) -> None:
+    if not ((args.deletecomments and line.strip().startswith('--')) or (args.deleteempty and len(line.strip()) == 0)):
+        fp.write(line)
+                            
 
 type_prefix = {
     'MATERIALIZED VIEW' : 'mv_',
@@ -115,12 +122,12 @@ with open(inputfile) as fo:
                             opf.write('END $$;\n\n')    
                         # remove schema from comment line with name and type of object
                         line = re.sub(r'Schema: \w+;','',line)
-                        opf.write(line)
+                        write_line(opf, line)
                         opf.close
                         cntr+=1
                     newfile = False
                 else:
-                    opf.write(line)
+                    write_line(opf, line)
         elif not (data_match_result is None):
             newfile = True
             object_name = data_match_result.group('object_name')
@@ -140,19 +147,19 @@ with open(inputfile) as fo:
 
                     print(filename)
                     with open (filename,'w') as opf:
-                        opf.write(line)
+                        write_line(opf, line)
                         opf.close
                         cntr+=1
                     newfile = False
                 else:
-                    opf.write(line)
+                    write_line(opf, line)
         else:
             if skip == False:
                 with open (filename,'a') as opf:
                     create_function_const = 'CREATE FUNCTION '
                     if create_function_const in line:
                         line = line.replace(create_function_const,'CREATE OR REPLACE FUNCTION ')
-                    opf.write(line)       
+                    write_line(opf, line)       
                     opf.close
     if cntr == 1 :
         print ("No files created. Ensure that pg_dump was run with -v (verbose mode)!")
