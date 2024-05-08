@@ -49,7 +49,8 @@ type_prefix = {
     'CONSTRAINT' : 'cs_',
     'TRIGGER' : 'tr_',
     'FK CONSTRAINT' : 'fk_',
-    'COMMENT': 'ct_'
+    'COMMENT': 'ct_',
+    'TABLE DATA': 'tb_dt_'
 }
 
 inputfile = ''
@@ -88,6 +89,7 @@ with open(inputfile) as fo:
     for line in fo.readlines():
 #           use https://pythex.org/ to test the regular expression            
         match_result = re.search(r'-- Name: (?P<object_name>\w+)\(?\)?.*?Type: (?P<object_type>\w+ ?\w+);', line)
+        data_match_result = re.search(r'-- Data for Name: (?P<object_name>\w+); Type: (?P<object_type>\w+ ?\w+); Schema: (?P<schema>\w+); Owner: (?P<owner>\w+)', line)
         if not (match_result is None):
             newfile = True
             object_name = match_result.group('object_name')
@@ -113,6 +115,31 @@ with open(inputfile) as fo:
                             opf.write('END $$;\n\n')    
                         # remove schema from comment line with name and type of object
                         line = re.sub(r'Schema: \w+;','',line)
+                        opf.write(line)
+                        opf.close
+                        cntr+=1
+                    newfile = False
+                else:
+                    opf.write(line)
+        elif not (data_match_result is None):
+            newfile = True
+            object_name = data_match_result.group('object_name')
+            object_type = data_match_result.group('object_type')
+            skip = should_be_skipped(object_name,object_type)
+            if not skip :
+                object_type_set.add(object_type)
+
+                if (newfile):
+                    filename = ''
+                    if not args.nosequence:
+                        filename = '{0:05d}'.format(cntr) + '_'
+                    if not args.notype:
+                        filename += type_prefix[object_type]
+                    filename += object_name + '.sql'
+                    filename = os.path.join(output_dir,filename)
+
+                    print(filename)
+                    with open (filename,'w') as opf:
                         opf.write(line)
                         opf.close
                         cntr+=1
